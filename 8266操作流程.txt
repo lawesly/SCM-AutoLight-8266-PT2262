@@ -1,0 +1,13 @@
+AT+CWMODE=1
+AT+CWSMARTSTART=1
+输入wifi密码后
+AT+LANSTART
+手机端登陆后
+AT+CLDSTART
+
+如果想发送数据
+AT+CLDSEND=<LEN>
+
+如果接收到数据
+0D 0A 2B 43 4C 44 2C 32 3A 30 00 
+换行回车+CLD,<LEN>:数据 NUL

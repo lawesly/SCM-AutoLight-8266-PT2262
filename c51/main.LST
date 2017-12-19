@@ -1,0 +1,117 @@
+C51 COMPILER V9.00   MAIN                                                                  02/01/2016 08:29:13 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN main.OBJ
+COMPILER INVOKED BY: C:\Keil4\C51\BIN\C51.EXE main.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          #ifndef _light_h
+   2          #include<light.h>
+   3          #define _light_h
+   4          #endif
+   5          unsigned int lightState;
+   6          unsigned char serialNumber;
+   7          unsigned char openTime[12][2];
+   8          bit wifiDownload;
+   9          void main(void)
+  10          {
+  11   1      unsigned char i;
+  12   1      unsigned char keyValue;
+  13   1      unsigned int lightFlag;
+  14   1      unsigned char lightCheck;
+  15   1      
+  16   1      
+  17   1      P0=P1=P2=0;
+  18   1      delayMs(DELAYNUM);
+  19   1      //初始化所有灯状态为0，初始化1302, 初始波特率9600-8-n-1初始化wifiDownload为0，wifi传送数据序号为0
+  20   1      lightState=0;
+  21   1      serialNumber=0;
+  22   1      ds1302Init();
+  23   1      wifiInit();
+  24   1      wifiDownload=0;
+  25   1      //灯控制
+  26   1      for(i=0;i<12;i++)
+  27   1      M433ControlLight(i);
+  28   1      wifiUpload();
+  29   1      while(1)
+  30   1      {
+  31   2      //查询wifi是否有download，如果有，就执行
+  32   2      if(wifiDownload)
+  33   2      {
+  34   3      wifiDownload=0;
+  35   3                      for(i=0;i<12;i++)
+  36   3                              M433ControlLight(i);
+  37   3                      wifiUpload();
+  38   3      }               
+  39   2      //查询按键
+  40   2              keyValue=keyScan();
+  41   2              //按键是0，关闭所有灯，按键不是0，取反相应的灯，如果是开灯，记录开灯的day
+  42   2              if (keyValue<12)
+  43   2                      {
+  44   3                      if(keyValue==0)
+  45   3                      {
+  46   4                      lightState=0;
+  47   4                      for(i=0;i<12;i++)
+  48   4                              M433ControlLight(i);
+  49   4                      wifiUpload();
+  50   4                      }
+  51   3                      else
+  52   3                      {
+  53   4                      lightFlag=1;
+  54   4                      lightFlag=lightFlag<<keyValue;
+  55   4                      if(lightState%2)
+C51 COMPILER V9.00   MAIN                                                                  02/01/2016 08:29:13 PAGE 2   
+
+  56   4                      {
+  57   5                      lightState=lightFlag;
+  58   5                      }
+  59   4                      else
+  60   4                      {
+  61   5                      lightState=lightState^lightFlag;
+  62   5                      }
+  63   4                      M433ControlLight(keyValue);
+  64   4                      wifiUpload();
+  65   4                      if(lightFlag&lightState)
+  66   4                              {
+  67   5                              openTime[keyValue][0]=ds1302Read(Day_R);
+  68   5                              openTime[keyValue][1]=ds1302Read(Hour_R);
+  69   5                              }       
+  70   4                      }
+  71   3                      }                                 
+  72   2                      
+  73   2              //按时间查询是否有需要关闭的灯
+  74   2              if((ds1302Read(Hour_R)==0x08)&&(ds1302Read(Min_R)==0x00))
+  75   2                      {
+  76   3                      lightCheck=lightState;
+  77   3                      for(i=1;i<12;i++)
+  78   3                              {
+  79   4                               lightCheck/=2;
+  80   4                               if(lightCheck%2)
+  81   4                                      {
+  82   5                                      if(!((openTime[i][0]==ds1302Read(Day_R))&&( openTime[keyValue][1]>0x05)))
+  83   5                                              {
+  84   6                                              M433ControlLight(i);
+  85   6                                              wifiUpload();
+  86   6                                              }
+  87   5                                      }
+  88   4                              }
+  89   3                      }
+  90   2      }
+  91   1      
+  92   1      }                                                         
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    299    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     27       5
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      1    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,45 @@
+C51 COMPILER V9.00   LIGHTSTATE                                                            02/01/2016 08:29:13 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE LIGHTSTATE
+OBJECT MODULE PLACED IN lightState.OBJ
+COMPILER INVOKED BY: C:\Keil4\C51\BIN\C51.EXE lightState.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          #ifndef _light_h
+   2          #include<light.h>
+   3          #define _light_h
+   4          #endif
+   5          
+   6          void lightStateShow(unsigned int lightState)
+   7          {
+   8   1      //灯指示的显示
+   9   1      
+  10   1      P0=(unsigned char)(lightState&0xff);
+  11   1      P1=0x01;
+  12   1      delayMs(DELAYNUM);
+  13   1      P1=0;
+  14   1      delayMs(DELAYNUM);
+  15   1      P0=(unsigned char)(lightState>>8);
+  16   1      P1=0x02;
+  17   1      delayMs(DELAYNUM);
+  18   1      P1=0;
+  19   1      delayMs(DELAYNUM);
+  20   1      
+  21   1      
+  22   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     49    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       2
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

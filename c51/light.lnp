@@ -1,0 +1,10 @@
+"wifi.obj",
+"ds1302.obj",
+"keyBoard.obj",
+"lightState.obj",
+"M433Wireless.obj",
+"main.obj",
+"test.obj",
+"delay.obj" 
+TO "light" 
+RAMSIZE(256) 
